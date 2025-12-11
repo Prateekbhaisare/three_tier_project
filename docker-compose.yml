@@ -1,31 +1,33 @@
 version: "3.8"
 services:
-    mongodb:
-        container_name: mongo
-        image: mongo:latest
-        volumes:
-          - ./backend/data:/data
-          - ./backend/data/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
-        ports:
-            - "27017:27017"
-    backend:
-        container_name: backend
-        build: ./backend
-        env_file:
-            - ./backend/.env.sample
-        ports:
-          - "5000:5000"
-        depends_on:
-            - mongodb
-    frontend:
-        container_name: frontend
-        build: ./frontend
-        env_file:
-            - ./frontend/.env.sample
-        ports:
-          - "5173:5173"
+  mongodb:
+    container_name: mongo
+    image: mongo:latest
+    volumes:
+      - ./backend/data:/data
+      - ./backend/data/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+    ports:
+      - "27017:27017"
 
-    jenkins:
+  backend:
+    container_name: backend
+    build: ./backend
+    env_file:
+      - ./backend/.env.sample
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    env_file:
+      - ./frontend/.env.sample
+    ports:
+      - "5173:5173"
+
+  jenkins:
     image: jenkins/jenkins:lts
     privileged: true
     user: root
@@ -37,6 +39,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - JAVA_OPTS=-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
-    
+
 volumes:
-    data:
+  data:
